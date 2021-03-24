@@ -1,0 +1,61 @@
+#!/bin/bash
+
+if [[ "$1" == "--help" ]]; then
+    cat << EOF
+lg - a command line captain's log and time tracker.
+
+Usage:
+ lg [command] [options]
+
+Commands:
+ entry  - add a log entry
+ todo   - continues a the rolling TODO list
+ start  - start tracking time
+ stop   - stop tracking time
+ hours  - list tracked time
+ path   - adds this script to PATH. Run '. ./lg path' to add 'lg' to your PATH
+ list   - lists all log entries
+
+Options:
+ --help - shows this message
+EOF
+fi
+
+if [[ "$1" == "list" ]]; then
+    git log
+fi
+
+if [[ "$1" == "todo" ]]; then
+    if [[ "$#" == "2" && "$2" == "--list" ]]; then
+        git log --grep TODOs
+    else
+        git commit --allow-empty --reuse-message $(git log --oneline | grep 'TODOs' | head -n 1 | awk '{print $1}') --date "$(date)"
+        git commit --amend --allow-empty
+    fi
+fi
+
+if [[ "$1" == "start" ]]; then
+    if [[ "$(git log -n 1 --pretty=format:"%ad %s" --date=raw --grep 'hours:' | grep stop)" == "" ]]; then
+        echo "lg hasn't been stopped, so starting doesn't make sense"
+        exit 1
+    fi
+    git pull --rebase
+	git commit --allow-empty -m "hours:start"
+fi
+
+if [[ "$1" == "stop" ]]; then
+    if [[ "$(git log -n 1 --pretty=format:"%ad %s" --date=raw --grep 'hours:' | grep start)" == "" ]]; then
+        echo "lg hasn't been started, so stopping doesn't make sense"
+        exit 1
+    fi
+    git push
+	git commit --allow-empty -m "hours:stop"
+fi
+
+if [[ "$1" == "hours" ]]; then
+	git log --since 00:00 --pretty=format:"%ad %s" --date=raw --grep "hours:"
+fi
+
+if [[ "$1" == "path" ]]; then
+    export PATH="$PATH:$(pwd)"
+fi
