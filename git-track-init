@@ -1,0 +1,33 @@
+#!/bin/bash
+function help() {
+    cat << EOF
+GIT-TRACK-INIT
+
+Name:
+  git-track-init - initialise a git-track repository.
+
+Usage:
+  git track init <path-to-git-repo>
+
+Options:
+ --help - shows this message
+
+EOF
+}
+
+if [[ "$#" == "0" || "$1" == "--help" || "$1" == "-h" ]]; then
+    echo "help: $#"
+    help
+    exit 0
+fi
+
+if [[ -e $1 ]]; then
+    echo $1 > ~/.git-track
+    pushd $1 > /dev/null
+    git commit -m "git track initialised" --allow-empty
+    popd > /dev/null
+else
+    echo "$1 does not exist"
+    echo "git track init must be used with an existing git repository"
+    exit 1
+fi

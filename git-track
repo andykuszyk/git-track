@@ -1,0 +1,38 @@
+#!/bin/bash
+function help() {
+    cat << EOF
+GIT-TRACK
+
+Name:
+ git-track - A git-based, command-line time and todo tracker.
+
+Usage:
+ git track [sub-command] [options]
+
+Commands:
+ init   - initialises a git-track repository
+ todo   - continues a rolling TODO list
+ start  - start tracking time
+ stop   - stop tracking time
+ report - reports on tracked time
+ log    - lists all log entries
+
+Options:
+ --help - shows this message
+EOF
+}
+
+if [[ "$1" == "--help" || "$1" == "-h" ]]; then
+    help
+    exit 0
+fi
+
+for c in "todo" "start" "stop" "report" "log" "init"; do
+    if [[ "$1" == "$c" ]]; then
+        git-track-$c $(echo -n $@ | sed "s/^$1 //g")
+        exit $?
+    fi
+done
+
+help
+exit 1

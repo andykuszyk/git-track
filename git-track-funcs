@@ -1,0 +1,16 @@
+#!/bin/bash
+function fail() {
+    echo "git track has not been initialised"
+    echo "run git track init first"
+    exit 1
+}
+
+function init_check() {
+    if [[ ! -e ~/.git-track ]]; then
+        fail
+    fi
+    repo=$(cat ~/.git-track)
+    if [[ ! -n $repo ]]; then
+        fail    
+    fi
+}

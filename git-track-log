@@ -1,0 +1,6 @@
+#!/bin/bash
+source git-track-funcs
+init_check
+pushd $repo > /dev/null
+git log
+popd > /dev/null

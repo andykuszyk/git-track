@@ -1,0 +1,13 @@
+#!/bin/bash
+source git-track-funcs
+init_check
+pushd $repo > /dev/null
+if [[ "$(git log --oneline | grep 'TODOs' | head -n 1)" == "" ]]; then
+    git commit -m "TODOs
+
+- [x] Install git track
+- [ ] Profit!" --allow-empty
+fi
+git commit --allow-empty --reuse-message $(git log --oneline | grep 'TODOs' | head -n 1 | awk '{print $1}') --date "$(date)"
+git commit --amend --allow-empty
+popd > /dev/null

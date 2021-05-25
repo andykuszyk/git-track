@@ -1,0 +1,11 @@
+#!/bin/bash
+source git-track-funcs
+init_check
+pushd $repo > /dev/null
+if [[ "$(git log -n 1 --pretty=format:"%ad %s" --date=raw --grep 'hours:' | grep start)" == "" ]]; then
+    echo "git track hasn't been started, so stopping doesn't make sense"
+    exit 1
+fi
+git push
+git commit --allow-empty -m "hours:stop"
+popd > /dev/null
