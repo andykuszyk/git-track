@@ -56,14 +56,17 @@ def build_daily_hours(working_hours):
             daily_hours[day] = hours
     return daily_hours
 
-def build_weekly_hours(daily_hours):
-    weekly_hours = {}
+def build_weekly_hours_by_year(daily_hours):
+    weekly_hours_by_year = {}
     for day in daily_hours:
+        year = day.isocalendar()[0]
         week = day.isocalendar()[1]
-        if week not in weekly_hours:
-            weekly_hours[week] = {}
-        weekly_hours[week][WEEKDAYS[day.weekday()]] = round(daily_hours[day], 2)
-    return weekly_hours
+        if year not in weekly_hours_by_year:
+            weekly_hours_by_year[year] = {}
+        if week not in weekly_hours_by_year[year]:
+            weekly_hours_by_year[year][week] = {}
+        weekly_hours_by_year[year][week][WEEKDAYS[day.weekday()]] = round(daily_hours[day], 2)
+    return weekly_hours_by_year
 
 def total(week):
     total = 0
@@ -74,14 +77,16 @@ def total(week):
 def hours():
     working_hours = build_working_hours()
     daily_hours = build_daily_hours(working_hours)
-    weekly_hours = build_weekly_hours(daily_hours)
+    weekly_hours_by_year = build_weekly_hours_by_year(daily_hours)
 
-    for week in weekly_hours:
-        print('## Week {}'.format(week))
-        for day in weekly_hours[week]:
-            print('{}: {}'.format(day, weekly_hours[week][day]))
-        print('Total: {}'.format(total(weekly_hours[week])))
-        print('')
+    for year in weekly_hours_by_year:
+        weekly_hours = weekly_hours_by_year[year]
+        for week in weekly_hours:
+            print('## {} | Week {}'.format(year, week))
+            for day in weekly_hours[week]:
+                print('{}: {}'.format(day, weekly_hours[week][day]))
+            print('Total: {}'.format(total(weekly_hours[week])))
+            print('')
 
 if __name__ == '__main__':
     hours()
